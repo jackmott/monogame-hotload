@@ -15,3 +15,8 @@ A template/demo solution showing how to do hotswappable game logic and shaders w
 
 If anyone has ideas about how to get around the two limitations above, let me know.  I know about adding assemblies to a separate app domain, but this has a number of limitations that won't always be appropriate.
 
+# Attribution
+
+Sample sprite by:
+Stephen Challener (Redshrike)
+https://opengameart.org/content/bosses-and-monsters-spritesheets-ars-notoria
