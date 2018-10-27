@@ -11,7 +11,7 @@ A template/demo solution showing how to do hotswappable game logic and shaders w
 # Limitations
 
 * Each time you swap in a new game logic dll, it *adds* rather than replaces the assembly, so it is a memory leak.  
-* You will often have to build the game logic dll twice as it may fail to write the pdb file
+* You will often have to build the game logic dll twice as it may fail to write the pdb file. This only applies if you run the platform layer from within Visual Studio. If you run it from the command line, no problems.
 
 # Help Wanted
 
