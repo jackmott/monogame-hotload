@@ -8,6 +8,7 @@ A template/demo solution showing how to do hotswappable game logic and shaders w
 * During game runtime, recompile your game logic project, and it will swap in as the game runs.
 * The drawing code can also be in the hotswappable dll if you want, you just have to pass in the GraphicsDevice object each draw call
 * Change effect/shader files as the game runs, upon save, the game will detect the change and swap in the new shader/effect
+* Debugging in visual studio still works fine on both ends
 
 # Limitations
 
