@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 using GameInterface;
 
 namespace HotloadPong
@@ -14,7 +13,7 @@ namespace HotloadPong
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Hotloader hotloader;
-        GameState state;        
+        GameState state;
 
         Texture2D playerTex;
         int screenWidth;
@@ -39,7 +38,7 @@ namespace HotloadPong
 
             base.Initialize();
             screenWidth = graphics.PreferredBackBufferWidth;
-            screenHeight = graphics.PreferredBackBufferHeight;                        
+            screenHeight = graphics.PreferredBackBufferHeight;
         }
 
         /// <summary>
@@ -51,7 +50,7 @@ namespace HotloadPong
             hotloader = new Hotloader(Content, GraphicsDevice);
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            playerTex = Content.Load<Texture2D>("mage");            
+            playerTex = Content.Load<Texture2D>("mage");
             hotloader.AddShader("effect");
             // TODO: use this.Content to load your game content here
         }
@@ -75,10 +74,12 @@ namespace HotloadPong
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+
+#if DEBUG
             hotloader.CheckDLL(state);
             hotloader.CheckShaders();
-            state = hotloader.Update(Keyboard.GetState(),gameTime);
+#endif
+            state = hotloader.Update(Keyboard.GetState(), gameTime);
             base.Update(gameTime);
         }
 
@@ -88,9 +89,9 @@ namespace HotloadPong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);            
-            spriteBatch.Begin(effect: hotloader.GetShader("effect"));  
-            spriteBatch.Draw(playerTex, new Vector2(state.PlayerPos.X * screenWidth, state.PlayerPos.Y * screenHeight - 100.0f), Color.White);            
+            GraphicsDevice.Clear(Color.Black);
+            spriteBatch.Begin(effect: hotloader.GetShader("effect"));
+            spriteBatch.Draw(playerTex, new Vector2(state.PlayerPos.X * screenWidth, state.PlayerPos.Y * screenHeight - 100.0f), Color.White);
             spriteBatch.End();
 
             // TODO: Add your drawing code here

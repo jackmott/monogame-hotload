@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using GameInterface;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System.Threading;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
@@ -58,16 +54,16 @@ namespace HotloadPong
         }
 
         public void LoadDLL()
-        {            
-            var path = solutionPath + @"\GameLogic\bin\Debug\GameLogic.dll";            
-            lastUpdateDLL = File.GetLastWriteTime(path);            
+        {
+            var path = solutionPath + @"\GameLogic\bin\Debug\GameLogic.dll";
+            lastUpdateDLL = File.GetLastWriteTime(path);
             asm = Assembly.Load(File.ReadAllBytes(path));
             proxy = (IGameInterface)asm.CreateInstance("GameLogic.GameLogic");
         }
 
         public GameState Update(KeyboardState keyboard, GameTime gameTime)
         {
-            return proxy.Update(keyboard,gameTime);
+            return proxy.Update(keyboard, gameTime);
         }
 
         public void SetState(GameState state)
@@ -76,24 +72,24 @@ namespace HotloadPong
         }
 
         public void CheckDLL(GameState state)
-        {            
+        {
             var path = solutionPath + @"\GameLogic\bin\Debug\GameLogic.dll";
-            var update = File.GetLastWriteTime(path);            
+            var update = File.GetLastWriteTime(path);
             if (update > lastUpdateDLL)
-            {                
-                asm = null;                
+            {
+                asm = null;
                 LoadDLL();
                 proxy.SetState(state);
             }
         }
 
-        
+
 
 #if DEBUG
         public void CheckShaders()
         {
-            
-            var files = Directory.GetFiles(solutionPath+@"/PlatformLayer/Content", "*.fx");
+
+            var files = Directory.GetFiles(solutionPath + @"/PlatformLayer/Content", "*.fx");
             foreach (var file in files)
             {
                 var t = File.GetLastWriteTime(file);
@@ -128,14 +124,14 @@ namespace HotloadPong
             StringBuilder stdOutput = new StringBuilder();
             pProcess.OutputDataReceived += (sender, args) => stdOutput.Append(args.Data);
 
-            
+
             pProcess.Start();
             pProcess.BeginOutputReadLine();
             stdError = pProcess.StandardError.ReadToEnd();
             pProcess.WaitForExit();
 
-            string builtPath = solutionPath+@"\PlatformLayer\Content\" + name + ".xnb";
-            string movePath = executionPath+ "/Content/" + name + ".xnb";
+            string builtPath = solutionPath + @"\PlatformLayer\Content\" + name + ".xnb";
+            string movePath = executionPath + "/Content/" + name + ".xnb";
             File.Copy(builtPath, movePath, true);
 
             ContentManager newTemp = new ContentManager(tempContent.ServiceProvider, tempContent.RootDirectory);
@@ -149,7 +145,7 @@ namespace HotloadPong
             tempContent.Unload();
             tempContent.Dispose();
             tempContent = newTemp;
-            shaders = newShaders;                        
+            shaders = newShaders;
 
         }
 #endif
