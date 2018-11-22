@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 
-namespace HotloadPong
+namespace HotloadDemo
 {
     /// <summary>
     /// This is the main type for your game.
@@ -14,12 +14,7 @@ namespace HotloadPong
         SpriteBatch spriteBatch;
         Hotloader hotloader;
         
-
-        Texture2D playerTex;
-        int screenWidth;
-        int screenHeight;
-
-
+       
         public HotloadGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -37,8 +32,7 @@ namespace HotloadPong
             // TODO: Add your initialization logic here
 
             base.Initialize();
-            screenWidth = graphics.PreferredBackBufferWidth;
-            screenHeight = graphics.PreferredBackBufferHeight;
+            
         }
 
         /// <summary>
@@ -47,17 +41,14 @@ namespace HotloadPong
         /// </summary>
         protected override void LoadContent()
         {
-            hotloader = new Hotloader(Content, GraphicsDevice);
+            hotloader = new Hotloader(Content);
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            playerTex = Content.Load<Texture2D>("mage");
-            hotloader.AddShader("effect");
-            
+            spriteBatch = new SpriteBatch(GraphicsDevice);            
+            hotloader.AddShader("effect");            
             var state = hotloader.GetState();
-            state.playerTex = playerTex;
+            state.playerTex = Content.Load<Texture2D>("mage");
             state.device = GraphicsDevice;
-            
-            // TODO: use this.Content to load your game content here
+                        
         }
 
         /// <summary>
@@ -65,8 +56,7 @@ namespace HotloadPong
         /// game-specific content.
         /// </summary>
         protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
+        {            
         }
 
         /// <summary>

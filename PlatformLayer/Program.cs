@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HotloadPong
+namespace HotloadDemo
 {
 #if WINDOWS || LINUX
     /// <summary>

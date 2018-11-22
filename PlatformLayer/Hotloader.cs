@@ -10,32 +10,35 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 
 
-namespace HotloadPong
+namespace HotloadDemo
 {
    
     public class Hotloader 
     {
+        
+        // logic will be your gamelogic class, on which we call update/draw each frame
         dynamic logic;
+
+        // state will be a class containing the entire state of your game
         dynamic state;
-        // For gamelogic hotloading
-        Assembly asm; // The current loaded gamelogic assembly
+
+        
+        Assembly assembly; // The current loaded gamelogic assembly/dll
         DateTime lastUpdateDLL; // Last time the gamelogic dll file was updated        
         string solutionPath;
         string executionPath;
 
         //For Shader Hotloading
-#if DEBUG
         ContentManager shaderContent;
+#if DEBUG
         DateTime lastUpdateShaders;
         //Location of mgcb executable, may be different on your system.
         string mgcbPathExe = @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
 #endif
-        
-        ContentManager content;
-        GraphicsDevice device;
 
 
-        public Hotloader(ContentManager content, GraphicsDevice device)
+
+        public Hotloader(ContentManager content)
         {
             //This gets the execution directory, 5 folders deep from solution
             //Adjust as necessary for your project structure
@@ -43,25 +46,23 @@ namespace HotloadPong
             solutionPath = executionPath + @"..\..\..\..\..";
 
             //Load gamelogic dll
-            LoadDLL();            
-            //Setup shader hotloading
-            this.content = content;
-            this.device = device;            
-#if DEBUG
+            LoadDLL();
+            //Setup shader hotloading            
             shaderContent = new ContentManager(content.ServiceProvider, content.RootDirectory);
+#if DEBUG
             lastUpdateShaders = DateTime.Now;
 #endif
-            
+
         }
 
         public void LoadDLL()
         {
             var path = solutionPath + @"\GameLogic\bin\Debug\GameLogic.dll";
             lastUpdateDLL = File.GetLastWriteTime(path);
-            asm = Assembly.Load(File.ReadAllBytes(path));
+            assembly = Assembly.Load(File.ReadAllBytes(path));
 
             // Find out gamelogic class in the loaded dll
-            foreach (Type type in asm.GetExportedTypes())
+            foreach (Type type in assembly.GetExportedTypes())
             {
                 if (type.FullName == "GameLogic.GameLogic")
                 {
@@ -123,7 +124,7 @@ namespace HotloadPong
             var update = File.GetLastWriteTime(path);
             if (update > lastUpdateDLL)
             {
-                asm = null;
+                assembly = null;
                 //Load the new DLL and then set the state 
                 LoadDLL();
                 SetState();
@@ -208,7 +209,7 @@ namespace HotloadPong
         {
             if (!state.shaders.ContainsKey(name.ToLower()))
             {
-                var shader = content.Load<Effect>(name.ToLower());
+                var shader = shaderContent.Load<Effect>(name.ToLower());
                 state.shaders.Add(name.ToLower(), shader);
             }
         }
