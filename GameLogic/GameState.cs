@@ -1,34 +1,53 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
-using GameInterface;
+using System.Collections.Generic;
 
 namespace GameLogic
 {
+ 
 
-    public class GameLogic : IGameInterface
+    public class GameState
+    {
+        public GraphicsDevice device;
+        public Texture2D playerTex;
+        public Dictionary<string, Effect> shaders;
+        public Vector2 PlayerPos;
+        public float jumpStart;
+
+        public GameState()
+        {
+            shaders = new Dictionary<string, Effect>();
+        }
+    }
+
+    public class GameLogic 
     {
         public GameState state;
-        public void SetState(GameState state)
+
+        public GameLogic()
         {
-            this.state = state;
+            state = new GameState();            
+            state.PlayerPos = new Vector2(0.5f, 1.0f);
+            state.jumpStart = 0;
+        }
+
+        
+        public GameState GetState()
+        {
+            return state;
         }
 
         private const float MOVE_SPEED = 0.05f;
         private const float JUMP_DURATION = 1000.0f;
         private const float JUMP_SPEED = 0.02f;
 
-        public GameState Update(KeyboardState keyboard, GameTime gameTime)
+        
+        public void Update(KeyboardState keyboard, GameTime gameTime)
         {
             var elapsed = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            if (state == null)
-            {
-                state = new GameState();
-                state.PlayerPos = new Vector2(0.5f, 1.0f);
-                state.jumpStart = 0;
-            }
-
+           
             if (keyboard.IsKeyDown(Keys.Left))
             {
                 state.PlayerPos.X -= MOVE_SPEED / elapsed;
@@ -58,8 +77,17 @@ namespace GameLogic
                     state.jumpStart = 0.0f;
                 }
 
-            }
-            return state;
+            }            
+        }
+
+        public void Draw(SpriteBatch batch,  GameTime gameTime)
+        {
+            
+            state.device.Clear(Color.Black);
+            batch.Begin(effect: state.shaders["effect"]);
+            batch.Draw(state.playerTex, new Vector2(state.PlayerPos.X * state.device.Viewport.Width, state.PlayerPos.Y * state.device.Viewport.Height - 100.0f), Color.White);
+            batch.End();            
+            
         }
     }
 }

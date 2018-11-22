@@ -24,7 +24,7 @@ struct VertexShaderOutput
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
 	float4 c = input.Color;
-	c.x = input.TextureCoordinates.x*1.0;
+	c.x = input.TextureCoordinates.x*100;
 	return tex2D(SpriteTextureSampler,input.TextureCoordinates) * c;
 }
 

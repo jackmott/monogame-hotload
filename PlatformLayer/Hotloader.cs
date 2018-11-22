@@ -3,32 +3,34 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.IO;
-using GameInterface;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
 
+
 namespace HotloadPong
 {
-    public class Hotloader : IGameInterface
+   
+    public class Hotloader 
     {
+        dynamic logic;
+        dynamic state;
         // For gamelogic hotloading
         Assembly asm; // The current loaded gamelogic assembly
-        DateTime lastUpdateDLL; // Last time the gamelogic dll file was updated
-        IGameInterface proxy; // Proxy through we we talk to the gamelogic class
+        DateTime lastUpdateDLL; // Last time the gamelogic dll file was updated        
         string solutionPath;
         string executionPath;
 
         //For Shader Hotloading
 #if DEBUG
-        ContentManager tempContent;
+        ContentManager shaderContent;
         DateTime lastUpdateShaders;
         //Location of mgcb executable, may be different on your system.
         string mgcbPathExe = @"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe";
 #endif
-        public Dictionary<string, Effect> shaders;
+        
         ContentManager content;
         GraphicsDevice device;
 
@@ -41,16 +43,15 @@ namespace HotloadPong
             solutionPath = executionPath + @"..\..\..\..\..";
 
             //Load gamelogic dll
-            LoadDLL();
-
+            LoadDLL();            
             //Setup shader hotloading
             this.content = content;
-            this.device = device;
-            shaders = new Dictionary<string, Effect>();
+            this.device = device;            
 #if DEBUG
-            tempContent = new ContentManager(content.ServiceProvider, content.RootDirectory);
+            shaderContent = new ContentManager(content.ServiceProvider, content.RootDirectory);
             lastUpdateShaders = DateTime.Now;
 #endif
+            
         }
 
         public void LoadDLL()
@@ -58,28 +59,74 @@ namespace HotloadPong
             var path = solutionPath + @"\GameLogic\bin\Debug\GameLogic.dll";
             lastUpdateDLL = File.GetLastWriteTime(path);
             asm = Assembly.Load(File.ReadAllBytes(path));
-            proxy = (IGameInterface)asm.CreateInstance("GameLogic.GameLogic");
-        }
 
-        public GameState Update(KeyboardState keyboard, GameTime gameTime)
+            // Find out gamelogic class in the loaded dll
+            foreach (Type type in asm.GetExportedTypes())
+            {
+                if (type.FullName == "GameLogic.GameLogic")
+                {
+                    // We found our gamelogic type, set our dynamic types logic, and state
+                    logic = Activator.CreateInstance(type);
+                    // Don't set state if it already exists, we are going to keep that state
+                    if (state == null)
+                    {
+                        state = logic.GetState();
+                    }
+                    break;
+                }
+                                
+            }                     
+    }
+
+       
+
+        public void Update(KeyboardState keyboard, GameTime gameTime)
         {
-            return proxy.Update(keyboard, gameTime);
+            logic.Update(keyboard, gameTime);
         }
 
-        public void SetState(GameState state)
+        public void Draw(SpriteBatch batch, GameTime gameTime)
+        {            
+            logic.Draw(batch, gameTime);
+        }
+
+        public dynamic GetState()
         {
-            proxy.SetState(state);
+            return state;
         }
 
-        public void CheckDLL(GameState state)
+        // Called once up loading up a new instance of the DLL to set the game state
+        // where it was.
+        public void SetState()
+        {
+            // Because the GameState won't be the *same* gamestate as before
+            // We have to copy or serialize the old game state object into the new one
+            // You could use binary serializer or something here except
+            // Monogame's types aren't tagged as serializeable
+            // So come up with whatever scheme you want.
+
+            //Get the updated state object, initailized to initial state
+            dynamic newState = logic.GetState();  
+            //Set everything to the state it was when the reload happened
+            newState.device = state.device;
+            newState.playerTex = state.playerTex;
+            newState.shaders = state.shaders;
+            newState.PlayerPos = state.PlayerPos;
+            newState.jumpStart = state.jumpStart;
+            state = newState;
+        }
+
+        // Check to see if the DLL has a newer date than when we last loaded it
+        public void CheckDLL()
         {
             var path = solutionPath + @"\GameLogic\bin\Debug\GameLogic.dll";
             var update = File.GetLastWriteTime(path);
             if (update > lastUpdateDLL)
             {
                 asm = null;
+                //Load the new DLL and then set the state 
                 LoadDLL();
-                proxy.SetState(state);
+                SetState();
             }
         }
 
@@ -134,33 +181,35 @@ namespace HotloadPong
             string movePath = executionPath + "/Content/" + name + ".xnb";
             File.Copy(builtPath, movePath, true);
 
-            ContentManager newTemp = new ContentManager(tempContent.ServiceProvider, tempContent.RootDirectory);
+            ContentManager newShaderContent = new ContentManager(shaderContent.ServiceProvider, shaderContent.RootDirectory);
             var newShaders = new Dictionary<string, Effect>();
-            foreach (var shaderName in shaders.Keys)
+            // Unfortunately due to the way monogame works we need to reload all the shaders into a new content manager
+            foreach (var shaderName in state.shaders.Keys)
             {
-                var effect = newTemp.Load<Effect>(shaderName);
+                var effect = newShaderContent.Load<Effect>(shaderName);
                 newShaders.Add(shaderName.ToLower(), effect);
             }
 
-            tempContent.Unload();
-            tempContent.Dispose();
-            tempContent = newTemp;
-            shaders = newShaders;
+            // Shut down the old content manager and swap
+            shaderContent.Unload();
+            shaderContent.Dispose();
+            shaderContent = newShaderContent;
+            state.shaders = newShaders;
 
         }
 #endif
 
         public Effect GetShader(string name)
         {
-            return shaders[name.ToLower()];
+            return state.shaders[name.ToLower()];
         }
 
         public void AddShader(string name)
         {
-            if (!shaders.ContainsKey(name.ToLower()))
+            if (!state.shaders.ContainsKey(name.ToLower()))
             {
                 var shader = content.Load<Effect>(name.ToLower());
-                shaders.Add(name.ToLower(), shader);
+                state.shaders.Add(name.ToLower(), shader);
             }
         }
 

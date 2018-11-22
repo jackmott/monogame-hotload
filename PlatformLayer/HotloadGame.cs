@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using GameInterface;
+
 
 namespace HotloadPong
 {
@@ -13,7 +13,7 @@ namespace HotloadPong
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Hotloader hotloader;
-        GameState state;
+        
 
         Texture2D playerTex;
         int screenWidth;
@@ -52,6 +52,11 @@ namespace HotloadPong
             spriteBatch = new SpriteBatch(GraphicsDevice);
             playerTex = Content.Load<Texture2D>("mage");
             hotloader.AddShader("effect");
+            
+            var state = hotloader.GetState();
+            state.playerTex = playerTex;
+            state.device = GraphicsDevice;
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -76,10 +81,10 @@ namespace HotloadPong
 
 
 #if DEBUG
-            hotloader.CheckDLL(state);
+            hotloader.CheckDLL();
             hotloader.CheckShaders();
 #endif
-            state = hotloader.Update(Keyboard.GetState(), gameTime);
+            hotloader.Update(Keyboard.GetState(), gameTime);
             base.Update(gameTime);
         }
 
@@ -89,13 +94,7 @@ namespace HotloadPong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
-            spriteBatch.Begin(effect: hotloader.GetShader("effect"));
-            spriteBatch.Draw(playerTex, new Vector2(state.PlayerPos.X * screenWidth, state.PlayerPos.Y * screenHeight - 100.0f), Color.White);
-            spriteBatch.End();
-
-            // TODO: Add your drawing code here
-
+            hotloader.Draw(spriteBatch, gameTime);
             base.Draw(gameTime);
         }
     }
