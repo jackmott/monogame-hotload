@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SourceFile>C:/projects/monogame-hotload/PlatformLayer/Content/effect.fx</SourceFile>
-  <SourceTime>2018-11-22T13:18:47.2689415-06:00</SourceTime>
+  <SourceTime>2018-11-22T13:46:22.5178184-06:00</SourceTime>
   <DestFile>C:/projects/monogame-hotload/PlatformLayer/Content/effect.xnb</DestFile>
-  <DestTime>2018-11-22T13:18:47.7960583-06:00</DestTime>
+  <DestTime>2018-11-22T13:46:23.0840748-06:00</DestTime>
   <Importer>EffectImporter</Importer>
   <ImporterTime>2018-09-23T16:55:52-05:00</ImporterTime>
   <Processor>EffectProcessor</Processor>

@@ -38,7 +38,7 @@ namespace GameLogic
             return state;
         }
 
-        private const float MOVE_SPEED = 0.05f;
+        private const float MOVE_SPEED = 0.25f;
         private const float JUMP_DURATION = 1000.0f;
         private const float JUMP_SPEED = 0.02f;
 
@@ -56,7 +56,8 @@ namespace GameLogic
             {
                 state.PlayerPos.X += MOVE_SPEED / elapsed;
             }
-            else if (keyboard.IsKeyDown(Keys.Space))
+
+            if (keyboard.IsKeyDown(Keys.Space))
             {
                 if (state.jumpStart == 0.0f)
                 {
