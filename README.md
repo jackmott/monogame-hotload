@@ -1,7 +1,7 @@
 # monogame-hotload
 A template/demo solution showing how to do hotswappable game logic and shaders with monogame and/or C#.
 
-# [Demo Video](https://youtu.be/D1708LklhW0).
+# [Demo Video](https://www.youtube.com/watch?v=fkJqyTIX12s).
 
 # Features
 
