@@ -12,17 +12,17 @@ using System.Diagnostics;
 
 namespace HotloadDemo
 {
-   
-    public class Hotloader 
+
+    public class Hotloader
     {
-        
+
         // logic will be your gamelogic class, on which we call update/draw each frame
         dynamic logic;
 
         // state will be a class containing the entire state of your game
         dynamic state;
 
-        
+
         Assembly assembly; // The current loaded gamelogic assembly/dll
         DateTime lastUpdateDLL; // Last time the gamelogic dll file was updated        
         string solutionPath;
@@ -75,11 +75,9 @@ namespace HotloadDemo
                     }
                     break;
                 }
-                                
-            }                     
-    }
 
-       
+            }
+        }
 
         public void Update(KeyboardState keyboard, GameTime gameTime)
         {
@@ -87,7 +85,7 @@ namespace HotloadDemo
         }
 
         public void Draw(SpriteBatch batch, GameTime gameTime)
-        {            
+        {
             logic.Draw(batch, gameTime);
         }
 
@@ -107,7 +105,7 @@ namespace HotloadDemo
             // So come up with whatever scheme you want.
 
             //Get the updated state object, initailized to initial state
-            dynamic newState = logic.GetState();  
+            dynamic newState = logic.GetState();
             //Set everything to the state it was when the reload happened
             newState.device = state.device;
             newState.playerTex = state.playerTex;

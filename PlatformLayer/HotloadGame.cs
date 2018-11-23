@@ -13,8 +13,8 @@ namespace HotloadDemo
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Hotloader hotloader;
-        
-       
+
+
         public HotloadGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -32,7 +32,7 @@ namespace HotloadDemo
             // TODO: Add your initialization logic here
 
             base.Initialize();
-            
+
         }
 
         /// <summary>
@@ -43,12 +43,12 @@ namespace HotloadDemo
         {
             hotloader = new Hotloader(Content);
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);            
-            hotloader.AddShader("effect");            
+            spriteBatch = new SpriteBatch(GraphicsDevice);
+            hotloader.AddShader("effect");
             var state = hotloader.GetState();
             state.playerTex = Content.Load<Texture2D>("mage");
             state.device = GraphicsDevice;
-                        
+
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace HotloadDemo
         /// game-specific content.
         /// </summary>
         protected override void UnloadContent()
-        {            
+        {
         }
 
         /// <summary>
