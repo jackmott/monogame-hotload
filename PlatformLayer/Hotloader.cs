@@ -104,14 +104,23 @@ namespace HotloadDemo
             // Monogame's types aren't tagged as serializeable
             // So come up with whatever scheme you want.
 
-            //Get the updated state object, initailized to initial state
+            
+            //Get an uninitialized copy of the new State from the new Assembly
             dynamic newState = logic.GetState();
-            //Set everything to the state it was when the reload happened
-            newState.device = state.device;
-            newState.playerTex = state.playerTex;
-            newState.shaders = state.shaders;
-            newState.PlayerPos = state.PlayerPos;
-            newState.jumpStart = state.jumpStart;
+
+            // Use reflection to update all public fields in the new assembl'y states
+            // with the values from the old state, so we start where we left off when loading
+            // a new assembly
+            // for more complex game states you would need to make this recursive
+            // on any type that is part of your gamelogic assembly, or collections
+            foreach (var field in state.GetType().GetFields())
+            {
+                dynamic value = field.GetValue(state);
+                var newField = newState.GetType().GetField(field.Name);
+                newField.SetValue(newState, value);
+            }
+
+           
             state = newState;
         }
 
