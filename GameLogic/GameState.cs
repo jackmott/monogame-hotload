@@ -2,15 +2,14 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace GameLogic
-{
-
-
+{    
     public class GameState
     {
         public GraphicsDevice device;
-        public Texture2D playerTex;
+        public Texture2D playerTex;        
         public Dictionary<string, Effect> shaders;
         public Vector2 PlayerPos;
         public float jumpStart;

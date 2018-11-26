@@ -100,11 +100,11 @@ namespace HotloadDemo
         {
             // Because the GameState won't be the *same* gamestate as before
             // We have to copy or serialize the old game state object into the new one
-            // You could use binary serializer or something here except
-            // Monogame's types aren't tagged as serializeable
-            // So come up with whatever scheme you want.
+            // I am using reflection to do it here, but for larger projects
+            // you may want to use DataContractSerializer or Protobuf-net
+            // both of which are able to serailize some of Monogame's types
+            // tagged with [DataContract] such as Vectors, Color etc
 
-            
             //Get an uninitialized copy of the new State from the new Assembly
             dynamic newState = logic.GetState();
 
